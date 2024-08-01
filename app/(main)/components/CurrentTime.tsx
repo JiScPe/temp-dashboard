@@ -4,14 +4,14 @@ import React, { useEffect, useState } from "react";
 
 const CurrentTime = () => {
   const [currentDate, setcurrentDate] = useState<string>(
-    moment().format("YYYY-MM-DD hh:mm:ss")
+    moment().format("YYYY-MM-DD HH:mm:ss")
   );
   const [isClient, setIsClient] = useState<boolean>(false);
 
   useEffect(() => {
     setIsClient(true);
     const intervalId = setInterval(() => {
-      setcurrentDate(moment().format("YYYY-MM-DD hh:mm:ss"));
+      setcurrentDate(moment().format("YYYY-MM-DD HH:mm:ss"));
     }, 1000);
 
     return () => clearInterval(intervalId);
