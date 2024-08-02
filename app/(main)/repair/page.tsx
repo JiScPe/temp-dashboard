@@ -15,7 +15,7 @@ const RepairPage = async ({ searchParams }: Props) => {
     <section>
       {/* Navbar */}
       <RedirectNavbar plant={plant} />
-      <RepairComponent />
+      {plant && <RepairComponent />}
     </section>
   );
 };
