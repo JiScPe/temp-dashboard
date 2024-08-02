@@ -2,13 +2,14 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Navbar from "./Navbar";
 import { Range } from "react-date-range";
-import EChartComponent from "./EChartComponent";
+import EChartMaterial from "./EChartMaterial";
+import Dashboard from "./Dashboard";
 import moment from "moment";
 import { ECOption } from "@/app/types/chart-type";
 import { ImSpinner2 } from "react-icons/im";
 
 const MaterialReceiptComponent = () => {
-  const [plant, setplant] = useState<string>("9771");
+  const [plant, setPlant] = useState<string>("9771");
   const [dateRange, setDateRange] = useState<Range[]>([
     {
       startDate: moment().startOf("month").toDate(),
@@ -16,11 +17,11 @@ const MaterialReceiptComponent = () => {
       key: "selection",
     },
   ]);
-  const [isLoading, setisLoading] = useState(false);
-  const [chartData, setchartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [chartData, setChartData] = useState([]);
   const fetchingData = useCallback(async () => {
     console.log("fetching material data...");
-    setisLoading(true);
+    setIsLoading(true);
     const { startDate, endDate } = dateRange[0];
     const startDateStr = moment(startDate).format("YYYY-MM-DD");
     const endDateStr = moment(endDate).format("YYYY-MM-DD");
@@ -29,12 +30,12 @@ const MaterialReceiptComponent = () => {
       const { rows } = await fetch(
         `/api/material?startdate=${startDateStr}&enddate=${endDateStr}&plant=${plant}`
       ).then((res) => res.json());
-      setchartData(rows);
+      setChartData(rows);
     } catch (error) {
       alert("Something went wrong! Please contact IT department");
       console.log("error:", error);
     } finally {
-      setisLoading(false);
+      setIsLoading(false);
     }
   }, [dateRange, plant]);
 
@@ -50,7 +51,21 @@ const MaterialReceiptComponent = () => {
     return () => clearInterval(interval);
   }, [fetchingData]);
 
-  const onsubmit = async () => {
+  useEffect(() => {
+    if (plant === "9773" || plant === "9774") {
+      const plantSwitchInterval = setInterval(() => {
+        setPlant((prevPlant) => (prevPlant === "9773" ? "9774" : "9773"));
+      }, 5 * 60 * 1000);
+
+      return () => clearInterval(plantSwitchInterval);
+    }
+  }, [plant]);
+
+  useEffect(() => {
+    fetchingData();
+  }, [plant, fetchingData]);
+
+  const onSubmit = async () => {
     fetchingData();
   };
 
@@ -150,10 +165,10 @@ const MaterialReceiptComponent = () => {
     <div>
       <Navbar
         plant={plant}
-        setplant={setplant}
+        setplant={setPlant}
         daterange={dateRange}
         setdaterange={setDateRange}
-        onsubmit={onsubmit}
+        onsubmit={onSubmit}
       />
       {isLoading && (
         <div className="h-[calc(100vh-80px)] overflow-auto w-full text-blue-600 flex flex-col justify-center items-center">
@@ -161,7 +176,10 @@ const MaterialReceiptComponent = () => {
           <p>loading...</p>
         </div>
       )}
-      <EChartComponent chartOption={chartOption} />
+      <div style={{ marginTop: "20px" }}>
+        <EChartMaterial chartOption={chartOption} />
+        <Dashboard plant={plant} />
+      </div>
     </div>
   );
 };

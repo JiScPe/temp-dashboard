@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import Navbar from "./Navbar";
 import { Range } from "react-date-range";
 import { ImSpinner2 } from "react-icons/im";
@@ -23,23 +23,7 @@ const AttendanceComponent = () => {
   const [intervalNumber, setintervalNumber] = useState<number>(5);
   const [showintervalInput, setshowintervalInput] = useState<boolean>(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchingData();
-    }, intervalNumber * 60 * 1000);
-
-    // Call fetchingData immediately when the component mounts
-    fetchingData();
-
-    // Clear the interval when the component unmounts or dependencies change
-    return () => clearInterval(interval);
-  }, [intervalNumber, plant]);
-
-  const onsubmit = async () => {
-    fetchingData();
-  };
-
-  async function fetchingData() {
+  const fetchingData = useCallback(async () => {
     console.log("fetching attendance data...");
     setisLoading(true);
 
@@ -62,7 +46,23 @@ const AttendanceComponent = () => {
     } finally {
       setisLoading(false);
     }
-  }
+  }, [plant]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchingData();
+    }, intervalNumber * 60 * 1000);
+
+    // Call fetchingData immediately when the component mounts
+    fetchingData();
+
+    // Clear the interval when the component unmounts or dependencies change
+    return () => clearInterval(interval);
+  }, [fetchingData, intervalNumber]);
+
+  const onsubmit = async () => {
+    fetchingData();
+  };
 
   function handleIntervalInputChange(e: ChangeEvent<HTMLInputElement>) {
     setintervalNumber(parseInt(e.target.value));

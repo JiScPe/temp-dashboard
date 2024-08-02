@@ -71,7 +71,6 @@ const Navbar = ({
             name="plant"
             id="plant"
             className="text-[#445e81] shadow-none bg-opacity-0 bg-inherit border-2 rounded-sm border-[#193b69] focus:outline-none w-14"
-            defaultValue={plant}
             value={plant}
             onChange={handlePlantSelectChange}
           >

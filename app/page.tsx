@@ -14,6 +14,7 @@ export default function Home() {
     { url: "/production", name: "CompleteRate" },
     { url: "/mainlayout", name: "MainLayout" },
     { url: "/repair", name: "Repair Rate" },
+    // { url: "/dashboard", name: "Dashboard" },
   ];
   return (
     <main className="bg-[url('/assets/images/mainbg.png')] bg-cover aspect-auto w-full h-screen text-white">

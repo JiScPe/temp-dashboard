@@ -7,14 +7,14 @@ type Props = {
   chartOption: ECOption;
 };
 
-const EChartComponent = ({ chartOption }: Props) => {
+const EChartMaterial = ({ chartOption }: Props) => {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const chartInstance = echarts.init(chartRef.current);
     chartInstance.setOption(chartOption);
     window.addEventListener("resize", () => {
-      // chartInstance.resize();
+      chartInstance.resize();
     });
 
     return () => {
@@ -23,8 +23,12 @@ const EChartComponent = ({ chartOption }: Props) => {
   }, [chartOption]);
 
   return (
-    <div ref={chartRef} className="z-2 h-[calc(100vh-120px)] m-0 md:m-2 lg:mx-10 lg:mt-10 p-0 text-sm md:text-lg lg:text-xl font-bold"></div>
+    <div
+      ref={chartRef}
+      className="chart-container"
+      style={{ height: '50vh', width: '100%' }} // Adjust the height to 50vh
+    ></div>
   );
 };
 
-export default EChartComponent;
+export default EChartMaterial;

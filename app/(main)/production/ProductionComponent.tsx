@@ -6,9 +6,12 @@ import { Range } from "react-date-range";
 import Navbar from "../components/Navbar";
 import { ImSpinner2 } from "react-icons/im";
 import EChartComponent from "../components/EChartComponent";
+import ChartOptionRF from "../components/ChartOptionRF";
+import ChartOptionWAC from "../components/ChartOptionWAC";
+import ChartOptionSAC from "../components/ChartOptionSAC";
 
 const ProductionComponent = () => {
-  const [plant, setplant] = useState<string>("9771");
+  const [plant, setPlant] = useState<string>("9771");
   const [dateRange, setDateRange] = useState<Range[]>([
     {
       startDate: moment().startOf("month").toDate(),
@@ -16,12 +19,14 @@ const ProductionComponent = () => {
       key: "selection",
     },
   ]);
-  const [isLoading, setisLoading] = useState<boolean>(false);
-  const [chartData, setchartData] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState<"bar" | "line">("bar");
+  const [chartRate, setChartRate] = useState<"PendingRate" | "CompleteRate">("PendingRate");
+
   const fetchingData = useCallback(async () => {
     console.log("fetching completerate data...");
-    setisLoading(true);
+    setIsLoading(true);
     const { startDate, endDate } = dateRange[0];
     const startDateStr = moment(startDate).format("YYYY-MM-DD");
     const endDateStr = moment(endDate).format("YYYY-MM-DD");
@@ -30,12 +35,12 @@ const ProductionComponent = () => {
       const { rows } = await fetch(
         `/api/completerate?startdate=${startDateStr}&enddate=${endDateStr}&plant=${plant}`
       ).then((res) => res.json());
-      setchartData(rows);
+      setChartData(rows);
     } catch (error) {
       alert("Something went wrong! Please contact IT department");
       console.log("error:", error);
     } finally {
-      setisLoading(false);
+      setIsLoading(false);
     }
   }, [dateRange, plant]);
 
@@ -51,7 +56,21 @@ const ProductionComponent = () => {
     return () => clearInterval(interval);
   }, [fetchingData]);
 
-  const onsubmit = async () => {
+  useEffect(() => {
+    if (plant === "9773" || plant === "9774") {
+      const plantSwitchInterval = setInterval(() => {
+        setPlant((prevPlant) => (prevPlant === "9773" ? "9774" : "9773"));
+      }, 5 * 60 * 1000);
+
+      return () => clearInterval(plantSwitchInterval);
+    }
+  }, [plant]);
+
+  useEffect(() => {
+    fetchingData();
+  }, [plant, fetchingData]);
+
+  const onSubmit = async () => {
     fetchingData();
   };
 
@@ -61,126 +80,108 @@ const ProductionComponent = () => {
   const uniqueArr = categories.filter(
     (value, index, self) => self.indexOf(value) === index
   );
-  // const arr1 = categories.forEach((item, index) => {
-  //   if (condition) {
-  //   }
-  // });
-  const pendingRateA: any[] = chartData
+
+  const RFRA: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "RA")
-    .map(({ PendingRate }: any) => parseFloat(PendingRate));
-  const pendingRateB: any[] = chartData
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const RFRB: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "RB")
-    .map(({ PendingRate }: any) => parseFloat(PendingRate));
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+
+  const WACW1: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "W1")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const WACW2: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "W2")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const WACWC: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "WC")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+
+  const SACW1: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "W1")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACW2: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "W2")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACIN: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "IN")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACN2: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "N2")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACN3: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "N3")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACOU: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "OU")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACU2: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "U2")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
+  const SACU3: any[] = chartData
+    .filter(({ ProdLine }: any) => ProdLine === "U3")
+    .map(({ PendingRate, CompleteRate }: any) =>
+      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+    );
 
   const duplicateArr: number[] = [];
-  const filteredArr = uniqueArr.forEach((item, index: number) => {
-    console.log(pendingRateA[index], pendingRateB[index])
-    if (pendingRateA[index] === 0 && pendingRateB[index] === 0) {
+  uniqueArr.forEach((item, index: number) => {
+    if (RFRA[index] === 0 && RFRB[index] === 0 || RFRA[index] === 100 && RFRB[index] === 100) {
+      duplicateArr.push(index);
+    }
+    if (WACW1[index] === 0 && WACW2[index] === 0 && WACWC[index] === 0 
+      || WACW1[index] === 100 && WACW2[index] === 100 && WACWC[index] === 100
+    ) {
+      duplicateArr.push(index);
+    }
+    if (SACW1[index] === 0 && SACW2[index] === 0 && SACIN[index] === 0 && SACN2[index] === 0 && SACN3[index] === 0 && SACOU[index] === 0 && SACU2[index] === 0 && SACU3[index] === 0
+      || SACW1[index] === 100 && SACW2[index] === 100 && SACIN[index] === 100 && SACN2[index] === 100 && SACN3[index] === 100 && SACOU[index] === 100 && SACU2[index] === 100 && SACU3[index] === 0
+    ) {
       duplicateArr.push(index);
     }
   });
-  console.log(uniqueArr);
-  console.log(duplicateArr);
-
-  const chartOption: ECOption = {
-    tooltip: {
-      trigger: "axis",
-    },
-    legend: {
-      data: ["Line A", "Line B"],
-      top: 0,
-      textStyle: {
-        color: "#9cbbd7",
-        fontSize: 20,
-      },
-    },
-    xAxis: [
-      {
-        type: "category",
-        data: uniqueArr.filter((_item, index) => !duplicateArr.includes(index)),
-        axisLabel: {
-          fontSize: 18,
-        },
-      },
-    ],
-    yAxis: [
-      {
-        type: "value",
-        name: "Job Pending Rate",
-        position: "left",
-        min: 0,
-        max: 100,
-        splitLine: {
-          lineStyle: {
-            color: "#244668",
-          },
-        },
-        axisLabel: {
-          formatter: "{value}%",
-          fontSize: 18,
-        },
-      },
-    ],
-    grid: {
-      left: 80,
-      containLabel: true,
-    },
-    series: [
-      {
-        name: "Line A",
-        type: chartType,
-        yAxisIndex: 0,
-        data: pendingRateA.filter(
-          (_item, index) => !duplicateArr.includes(index)
-        ),
-        label: {
-          show: true,
-          position: "top",
-          formatter: "{c}",
-          color: "#97a2b5",
-          fontSize: 14,
-        },
-        itemStyle: {
-          color: "#548bf3",
-        },
-      },
-      {
-        name: "Line B",
-        type: chartType,
-        yAxisIndex: 0,
-        data: pendingRateB.filter(
-          (_item, index) => !duplicateArr.includes(index)
-        ),
-        label: {
-          show: true,
-          position: "top",
-          formatter: "{c}",
-          color: "#97a2b5",
-          fontSize: 14,
-        },
-        itemStyle: {
-          color: "#40f4ec",
-        },
-      },
-    ],
-    textStyle: {
-      color: "#9cbbd7",
-      fontSize: 16,
-    },
-  };
 
   function handleChartTypeChange(event: ChangeEvent<HTMLSelectElement>) {
     setChartType(event.target.value as "bar" | "line");
+  }
+
+  function handleChartRateChange(event: ChangeEvent<HTMLSelectElement>) {
+    setChartRate(event.target.value as "PendingRate" | "CompleteRate");
   }
 
   return (
     <div>
       <Navbar
         plant={plant}
-        setplant={setplant}
+        setplant={setPlant}
         daterange={dateRange}
         setdaterange={setDateRange}
-        onsubmit={onsubmit}
+        onsubmit={onSubmit}
       />
       {isLoading && (
         <div className="h-[calc(100vh-80px)] overflow-auto w-full text-blue-600 flex flex-col justify-center items-center">
@@ -197,7 +198,46 @@ const ProductionComponent = () => {
         <option value="bar">bar</option>
         <option value="line">line</option>
       </select>
-      <EChartComponent chartOption={chartOption} />
+      <select
+        name="chartrate"
+        id="chartrate"
+        onChange={handleChartRateChange}
+        className="text-[#445e81] shadow-none bg-opacity-0 bg-inherit border-2 rounded-sm border-[#193b69] focus:outline-none w-14"
+      >
+        <option value="PendingRate">Pending Rate</option>
+        <option value="CompleteRate">Complete Rate</option>
+      </select>
+    {plant === "9771" && <ChartOptionRF
+            uniqueArr={uniqueArr}
+            duplicateArr={duplicateArr}
+            chartRate={chartRate}
+            chartType={chartType}
+            RFRA={RFRA}
+            RFRB={RFRB}
+          />}
+    {plant === "9773" && <ChartOptionWAC
+            uniqueArr={uniqueArr}
+            duplicateArr={duplicateArr}
+            chartRate={chartRate}
+            chartType={chartType}
+            WACW1={WACW1}
+            WACW2={WACW2}
+            WACWC={WACWC}
+          />}
+    {plant === "9774" && <ChartOptionSAC
+            uniqueArr={uniqueArr}
+            duplicateArr={duplicateArr}
+            chartRate={chartRate}
+            chartType={chartType}
+            SACW1={SACW1}
+            SACW2={SACW2}
+            SACIN={SACIN}
+            SACN2={SACN2}
+            SACN3={SACN3}
+            SACOU={SACOU}
+            SACU2={SACU2}
+            SACU3={SACU3}
+          />}
     </div>
   );
 };

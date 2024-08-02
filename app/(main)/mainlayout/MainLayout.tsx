@@ -35,7 +35,7 @@ const MainLayout = ({ data, getIdleTime }: Props) => {
     return () => {
       clearInterval(interval);
     };
-  }, [plant, prod_line]);
+  }, [plant, prod_line, getIdleTime]);
 
   if (data.length < 1) {
     return (

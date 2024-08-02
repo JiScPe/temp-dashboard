@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import RepairStation from "./RepairStation";
 import { RepairI } from "@/app/types/repair-type";
 import RepairAC from "./RepairAC";
@@ -10,11 +10,11 @@ const RepairComponent = () => {
   const plant = searchParams.get("plant");
   const [dataList, setdataList] = useState<RepairI[]>([]);
 
-  function fetchRepairData() {
+  const fetchRepairData = useCallback(() => {
     fetch(`/api/repair_rate?plant=${plant}`)
       .then((res) => res.json())
       .then((data) => setdataList(data.rows));
-  }
+  }, [plant]);
 
   useEffect(() => {
     fetchRepairData();
@@ -25,7 +25,7 @@ const RepairComponent = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [plant]);
+  }, [fetchRepairData]);
 
   const lineList = dataList
     .map(({ line_code }) => line_code)

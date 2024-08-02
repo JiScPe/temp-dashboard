@@ -1,0 +1,30 @@
+.centered {  
+    position: fixed; 
+    top: 50%;  
+    left: 50%;  
+    transform: translate(-50%, -50%);  
+   }
+  
+   .white-image {
+    filter: brightness(0) invert(1);
+    margin-bottom: 10px;
+  }
+  
+  .white-image2 {
+    filter: brightness(0) invert(1);
+    /* margin-top: 0px; */
+  }
+  
+  
+  .image-container {
+  position: relative;
+  text-align: center;
+  }
+  
+  .image-text {
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    color: white;
+    font-weight: bold;
+  }
