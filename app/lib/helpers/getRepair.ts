@@ -2,6 +2,29 @@ import { Connection, RowDataPacket } from "mysql2";
 import { getProdLineList } from "../utility/getProdlineList";
 
 export async function getRepair(connection: Connection, plant: string) {
+  let rank_query: string | null;
+
+  if ((plant === "9771")) {
+    rank_query = `case
+        when right(t.Work_Cell_Code ,
+        4) = '0004' then 1
+        when right(t.Work_Cell_Code,
+        4) = '0007' then 2
+        when right(t.Work_Cell_Code,
+        4) in ('0011', '0013') then 3
+        when right(t.Work_Cell_Code,
+        4) = '0017' then 4
+        else 0
+    end as rank`;
+  } else {
+    rank_query = `
+        case
+            when right(t.Work_Cell_Code,
+            4) in ('0002', '0003', '0004', '0005', '0006', 'W003', 'W004') then 1
+            else 2
+        end as rank`;
+  }
+
   const sql = `
     select
         COUNT(p.WorkUser_BarCode) as input_qty,
@@ -9,17 +32,7 @@ export async function getRepair(connection: Connection, plant: string) {
         COUNT(p.WorkUser_BarCode) - COUNT(case when y.RepairEndTime is not null then 1 end) as remain_qty,
         n.WorkUser_LineCode as line_code,
         t.Work_Cell_Desc as scan_station,
-        case
-            when right(t.Work_Cell_Code ,
-            4) = '0004' then 1
-            when right(t.Work_Cell_Code,
-            4) = '0007' then 2
-            when right(t.Work_Cell_Code,
-            4) in ('0011', '0013') then 3
-            when right(t.Work_Cell_Code,
-            4) = '0017' then 4
-            else 0
-        end as rank
+        ${rank_query}
     from
         cosmo_im_${plant}.bns_qm_processtestdetail de
     inner join cosmo_im_${plant}.bns_qm_processtest p use index (TestTime_index)
@@ -41,8 +54,8 @@ export async function getRepair(connection: Connection, plant: string) {
         and p.TestTime >= curdate()
         and n.WorkUser_LineCode in ${getProdLineList(plant)}
     group by
-        n.WorkUser_LineCode ,
-        rank;
+        n.WorkUser_LineCode,
+        t.Work_Cell_Code;
     `;
 
   return connection.query<RowDataPacket[]>(sql);
