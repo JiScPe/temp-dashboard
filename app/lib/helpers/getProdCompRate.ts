@@ -11,10 +11,10 @@ export async function getProdCompRate(
                 p.FactoryNo,
                 p.EST as ProdDate,
                 substr(p.Edition, 2, 2) as ProdLine,
-                SUM(p.Quantity) as TotalPlanQty,
-                SUM(p.ActualQuantity) as TotalActualQty,
-                (SUM(p.ActualQuantity)/ SUM(p.Quantity))* 100 as CompleteRate,
-                format(100-((SUM(p.ActualQuantity)/ SUM(p.Quantity))* 100),2)  as PendingRate
+                ifnull(SUM(p.Quantity), '0.00') as TotalPlanQty,
+                ifnull(SUM(p.ActualQuantity), '0.00') as TotalActualQty,
+                ifnull((SUM(p.ActualQuantity)/ SUM(p.Quantity))* 100, '0.00') as CompleteRate,
+                ifnull(format(100-((SUM(p.ActualQuantity)/ SUM(p.Quantity))* 100), 2), '0.00') as PendingRate
             from
                 cosmo_im_${plant}.base_production_order_t p
             where
@@ -26,7 +26,8 @@ export async function getProdCompRate(
                 p.EST,
                 substr(p.Edition, 2, 2)
             order by
-                substr(p.Edition, 2, 2),
-                p.EST`;
+                p.EST,
+                substr(p.Edition, 2, 2);`
+            
   return connection.query<RowDataPacket[]>(sql);
 }

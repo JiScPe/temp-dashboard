@@ -84,83 +84,84 @@ const ProductionComponent = () => {
   const RFRA: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "RA")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const RFRB: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "RB")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
 
   const WACW1: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "W1")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const WACW2: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "W2")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const WACWC: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "WC")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
 
   const SACW1: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "W1")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACW2: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "W2")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACIN: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "IN")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACN2: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "N2")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACN3: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "N3")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACOU: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "OU")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACU2: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "U2")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
   const SACU3: any[] = chartData
     .filter(({ ProdLine }: any) => ProdLine === "U3")
     .map(({ PendingRate, CompleteRate }: any) =>
-      chartRate === "PendingRate" ? parseFloat(PendingRate) : parseFloat(CompleteRate)
+      chartRate === "PendingRate" ? parseFloat(PendingRate).toFixed(2) : parseFloat(CompleteRate).toFixed(2)
     );
 
   const duplicateArr: number[] = [];
   uniqueArr.forEach((item, index: number) => {
-    if (RFRA[index] === 0 && RFRB[index] === 0 || RFRA[index] === 100 && RFRB[index] === 100) {
+    console.log(RFRA[index])
+    if (RFRA[index] === "0.00"  && RFRB[index] === "0.00" || RFRA[index] === "100.00" && RFRB[index] === "100.00") {
       duplicateArr.push(index);
     }
-    if (WACW1[index] === 0 && WACW2[index] === 0 && WACWC[index] === 0 
-      || WACW1[index] === 100 && WACW2[index] === 100 && WACWC[index] === 100
+    if (WACW1[index] === "0.00" && WACW2[index] === "0.00" && WACWC[index] === "0.00" 
+      || WACW1[index] === "100.00" && WACW2[index] === "100.00" && WACWC[index] === "100.00"
     ) {
       duplicateArr.push(index);
     }
-    if (SACW1[index] === 0 && SACW2[index] === 0 && SACIN[index] === 0 && SACN2[index] === 0 && SACN3[index] === 0 && SACOU[index] === 0 && SACU2[index] === 0 && SACU3[index] === 0
-      || SACW1[index] === 100 && SACW2[index] === 100 && SACIN[index] === 100 && SACN2[index] === 100 && SACN3[index] === 100 && SACOU[index] === 100 && SACU2[index] === 100 && SACU3[index] === 0
+    if (SACW1[index] === "0.00" && SACW2[index] === "0.00" && SACIN[index] === "0.00" && SACN2[index] === "0.00" && SACN3[index] === "0.00" && SACOU[index] === "0.00" && SACU2[index] === "0.00" && SACU3[index] === "0.00"
+      || SACW1[index] === "100.00" && SACW2[index] === "100.00" && SACIN[index] === "100.00" && SACN2[index] === "100.00" && SACN3[index] === "100.00" && SACOU[index] === "100.00" && SACU2[index] === "100.00" && SACU3[index] === "0.00"
     ) {
       duplicateArr.push(index);
     }
