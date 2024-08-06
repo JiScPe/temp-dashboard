@@ -150,8 +150,8 @@ const Dashboard: React.FC<DashboardProps> = ({ plant }) => {
         <div className="image-container">
           <Image
             src={"/assets/images/dashboard/Supplier.png"}
-            width={90}
-            height={90}
+            width={70}
+            height={70}
             className="white-image2"
             alt="Supplier"
           />
@@ -248,8 +248,8 @@ const Dashboard: React.FC<DashboardProps> = ({ plant }) => {
               >
                 <Image
                   src={stateImages[state]}
-                  width={90}
-                  height={90}
+                  width={40}
+                  height={40}
                   alt={state}
                   style={{
                     marginBottom: "8px",
@@ -270,8 +270,8 @@ const Dashboard: React.FC<DashboardProps> = ({ plant }) => {
         <div className="image-container">
           <Image
             src={"/assets/images/dashboard/Factory.png"}
-            width={90}
-            height={90}
+            width={70}
+            height={70}
             className="white-image2"
             alt="Factory"
           />
