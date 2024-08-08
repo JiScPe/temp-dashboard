@@ -10,6 +10,7 @@ export async function getAttendanceData(connection: Connection, plant: string) {
                 where
                     ScanDate = curdate()
                     and Plant = '${plant}'
+                    and DivisionName not in ('RF EMC', 'RF R&D')
                 group by
                     divisionName;`;
   return connection.query<RowDataPacket[]>(sql);
