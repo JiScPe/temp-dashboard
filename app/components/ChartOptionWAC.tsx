@@ -1,24 +1,25 @@
 "use client";
 import React from "react";
 import { ECOption } from "@/app/types/chart-type";
-import EChartComponent from "../components/EChartComponent";
+import EChartComponent from "./EChartComponent";
 
 type Props = {
   uniqueArr: string[];
   duplicateArr: number[];
   chartRate: "PendingRate" | "CompleteRate";
   chartType: "bar" | "line";
-  RFRA: number[];
-  RFRB: number[];
+  WACW1: number[];
+  WACW2: number[];
+  WACWC: number[];
 };
 
-const ChartOptionRF = ({ uniqueArr, duplicateArr, chartRate, chartType, RFRA, RFRB }: Props) => {
-  const chartOptionRF: ECOption = {
+const ChartOptionWAC = ({ uniqueArr, duplicateArr, chartRate, chartType, WACW1, WACW2, WACWC }: Props) => {
+  const chartOptionWAC: ECOption = {
     tooltip: {
       trigger: "axis",
     },
     legend: {
-      data: ["Line A", "Line B"],
+      data: ["Line 1", "Line 2", "WC Line"],
       top: 0,
       textStyle: {
         color: "#9cbbd7",
@@ -58,10 +59,10 @@ const ChartOptionRF = ({ uniqueArr, duplicateArr, chartRate, chartType, RFRA, RF
     },
     series: [
       {
-        name: "Line A",
+        name: "Line 1",
         type: chartType,
         yAxisIndex: 0,
-        data: RFRA.filter((_item, index) => !duplicateArr.includes(index)),
+        data: WACW1.filter((_item, index) => !duplicateArr.includes(index)),
         label: {
           show: true,
           position: "top",
@@ -74,10 +75,10 @@ const ChartOptionRF = ({ uniqueArr, duplicateArr, chartRate, chartType, RFRA, RF
         },
       },
       {
-        name: "Line B",
+        name: "Line 2",
         type: chartType,
         yAxisIndex: 0,
-        data: RFRB.filter((_item, index) => !duplicateArr.includes(index)),
+        data: WACW2.filter((_item, index) => !duplicateArr.includes(index)),
         label: {
           show: true,
           position: "top",
@@ -89,6 +90,22 @@ const ChartOptionRF = ({ uniqueArr, duplicateArr, chartRate, chartType, RFRA, RF
           color: "#40f4ec",
         },
       },
+      {
+        name: "WC Line",
+        type: chartType,
+        yAxisIndex: 0,
+        data: WACWC.filter((_item, index) => !duplicateArr.includes(index)),
+        label: {
+          show: true,
+          position: "top",
+          formatter: "{c}",
+          color: "#97a2b5",
+          fontSize: 14,
+        },
+        itemStyle: {
+          color: "#047e21",
+        },
+      },
     ],
     textStyle: {
       color: "#9cbbd7",
@@ -96,7 +113,7 @@ const ChartOptionRF = ({ uniqueArr, duplicateArr, chartRate, chartType, RFRA, RF
     },
   };
 
-  return <EChartComponent chartOption={chartOptionRF} />;
+  return <EChartComponent chartOption={chartOptionWAC} />;
 };
 
-export default ChartOptionRF;
+export default ChartOptionWAC;

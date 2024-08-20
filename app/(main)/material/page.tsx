@@ -1,5 +1,5 @@
 import React from 'react'
-import MaterialReceiptComponent from '../components/MaterialReceipt'
+import MaterialReceiptComponent from '../../components/MaterialReceipt'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

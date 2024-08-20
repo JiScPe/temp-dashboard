@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "./Navbar";
 import { Range } from "react-date-range";
 import moment from "moment";
 import { ImSpinner2 } from "react-icons/im";

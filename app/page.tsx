@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RenderDateToString } from "./lib/date-to-str";
 
 type linkListType = {
   url: string;
@@ -6,6 +7,8 @@ type linkListType = {
 };
 
 export default function Home() {
+  const defaultStartDate = new Date();
+  defaultStartDate.setDate(defaultStartDate.getDate() - 30);
   const linkList: linkListType[] = [
     { url: "/delivery", name: "Delivery" },
     { url: "/material", name: "T-1 Report Receipt" },
@@ -13,7 +16,14 @@ export default function Home() {
     { url: "/attendance", name: "Attendance" },
     { url: "/production", name: "CompleteRate" },
     { url: "/mainlayout", name: "MainLayout" },
-    { url: "/repair", name: "Repair Rate" },
+    { url: "/repair?plant=9771", name: "Repair Rate" },
+    {
+      url: `/energy?startdate=${RenderDateToString(
+        defaultStartDate,
+        "YYYY-MM-DD"
+      )}&enddate=${RenderDateToString(new Date(), "YYYY-MM-DD")}`,
+      name: "Energy",
+    },
     // { url: "/dashboard", name: "Dashboard" },
   ];
   return (

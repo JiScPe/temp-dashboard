@@ -1,5 +1,5 @@
 import React from "react";
-import RedirectNavbar from "../components/RedirectNavbar";
+import RedirectNavbar from "../../components/RedirectNavbar";
 import RepairComponent from "./RepairComponent";
 
 type Props = {
@@ -14,7 +14,7 @@ const RepairPage = async ({ searchParams }: Props) => {
   return (
     <section>
       {/* Navbar */}
-      <RedirectNavbar plant={plant} />
+      <RedirectNavbar plant={plant} url="/repair" />
       {plant && <RepairComponent />}
     </section>
   );

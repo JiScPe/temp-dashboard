@@ -1,5 +1,5 @@
 import React from "react";
-import AttendanceComponent from "../components/Attendance";
+import AttendanceComponent from "../../components/Attendance";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

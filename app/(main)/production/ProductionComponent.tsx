@@ -3,12 +3,12 @@ import { ECOption } from "@/app/types/chart-type";
 import moment from "moment";
 import React, { useEffect, useState, useCallback, ChangeEvent } from "react";
 import { Range } from "react-date-range";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { ImSpinner2 } from "react-icons/im";
-import EChartComponent from "../components/EChartComponent";
-import ChartOptionRF from "../components/ChartOptionRF";
-import ChartOptionWAC from "../components/ChartOptionWAC";
-import ChartOptionSAC from "../components/ChartOptionSAC";
+import EChartComponent from "../../components/EChartComponent";
+import ChartOptionRF from "../../components/ChartOptionRF";
+import ChartOptionWAC from "../../components/ChartOptionWAC";
+import ChartOptionSAC from "../../components/ChartOptionSAC";
 
 const ProductionComponent = () => {
   const [plant, setPlant] = useState<string>("9771");
