@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/toaster";
 
 // const roboto = Roboto({ subsets: ["latin"], weight: "700" });
 const myFont = localFont({
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${myFont.className}`}>{children}</body>
+      <body className={`${myFont.className}`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

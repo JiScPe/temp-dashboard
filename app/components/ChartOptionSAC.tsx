@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { ECOption } from "@/app/types/chart-type";
-import EChartComponent from "../components/EChartComponent";
+import EChartComponent from "./EChartComponent";
 
 type Props = {
   uniqueArr: string[];
