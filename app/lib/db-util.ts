@@ -31,6 +31,21 @@ export async function connect78database(): Promise<Connection> {
     password: MYSQL_78_PASSWORD,
   });
 }
+export async function connect78webservices(): Promise<Connection> {
+  const {
+    MYSQL_78_HOST,
+    MYSQL_78_WEBSERVICES_DB,
+    MYSQL_78_USERNAME,
+    MYSQL_78_PASSWORD,
+  } = process.env;
+
+  return await mysql.createConnection({
+    host: MYSQL_78_HOST,
+    database: MYSQL_78_WEBSERVICES_DB,
+    user: MYSQL_78_USERNAME,
+    password: MYSQL_78_PASSWORD,
+  });
+}
 
 export async function connectMESdatabase(): Promise<Connection> {
   const {

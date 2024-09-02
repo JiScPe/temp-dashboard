@@ -8,7 +8,10 @@ import { coordinate } from "@/app/lib/utility/coordination";
 import { productionLineList } from "@/app/lib/utility/prodLine";
 
 type Props = {
-  data: IdleTimeI[];
+  data: {
+    message: string;
+    row: IdleTimeI[];
+  };
   getIdleTime: (plant: string | null, prod_line: string | null) => Promise<any>;
 };
 
@@ -16,18 +19,20 @@ const MainLayout = ({ data, getIdleTime }: Props) => {
   const searchParams = useSearchParams();
   const plant = searchParams.get("plant");
   const prod_line = searchParams.get("prod_line");
-  const [newdata, setnewdata] = useState(data);
-
+  const [newdata, setnewdata] = useState(data.row);
+  // console.log("data: ", data.row);
   useEffect(() => {
     const interval = setInterval(async () => {
       if (plant && prod_line) {
-        const updatedData = await getIdleTime(plant, prod_line);
+        const data = await getIdleTime(plant, prod_line);
+        const updateData: IdleTimeI[] = data.row;
         let combinedArr: any = [];
-        if (updatedData) {
-          combinedArr = updatedData.map((item: IdleTimeI, idx: number) => {
+        if (data) {
+          combinedArr = updateData.map((item: IdleTimeI, idx: number) => {
             return { ...item, ...coordinate[idx] };
           });
         }
+        // console.log(combinedArr);
         setnewdata(combinedArr);
       }
     }, 1000);
@@ -37,7 +42,7 @@ const MainLayout = ({ data, getIdleTime }: Props) => {
     };
   }, [plant, prod_line, getIdleTime]);
 
-  if (data.length < 1) {
+  if (newdata.length < 1) {
     return (
       <div>
         <MainLayoutNav />
@@ -68,9 +73,7 @@ const MainLayout = ({ data, getIdleTime }: Props) => {
   return (
     <div>
       <MainLayoutNav />
-      <h1 className="w-full text-center text-slate-200">
-        {headerDisplay()}
-      </h1>
+      <h1 className="w-full text-center text-slate-200">{headerDisplay()}</h1>
       <div className="w-4/5 mx-auto">
         <div className="relative">
           <Image

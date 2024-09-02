@@ -11,24 +11,27 @@ type Props = {
 async function getIdleTime(plant: string | null, prod_line: string | null) {
   "use server";
   const API_URL: string | undefined = process.env.API_URL;
-  // console.log("fetching data...");
-  const { row } = await fetch(
+  console.log("fetching idle time data...");
+  console.log(`API: ${API_URL}`);
+
+  const data = await fetch(
     `${API_URL}/api/mainlayout?plant=${plant}&prod_line=${prod_line}`,
     { cache: "no-cache" }
-  ).then((res) => res.json());
+  );
 
-  if (!row) {
+  if (!data.ok) {
+    console.log(`Error fail to fetch data: ${data.status} ${data.statusText}`);
     return [];
   }
 
-  return row;
+  let idleTimeData = await data.json();
+  return idleTimeData;
 }
 
 const MainLayoutPage = async ({ searchParams }: Props) => {
   const { plant, prod_line } = searchParams;
 
   const data = await getIdleTime(plant, prod_line);
-  // console.log(data.length);
   return <MainLayout data={data} getIdleTime={getIdleTime} />;
 };
 

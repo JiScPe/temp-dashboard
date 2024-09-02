@@ -35,7 +35,6 @@ const MainLayoutNav = () => {
         name="plant"
         id="plant"
         onChange={handleSelectPlantChange}
-        defaultValue={"select plant"}
         value={selectedPlant}
       >
         <option>select plant</option>
