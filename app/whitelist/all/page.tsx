@@ -24,46 +24,32 @@ const page = async () => {
     });
 
     let { rows } = await data.json();
-    console.log(rows);
     let whitelist_data: WhitelistDataType[] = rows;
 
     return (
       <main className="bg-[#065aa8] text-black h-screen w-full flex">
-        <div className="w-4/5 xl:w-4/5 2xl:w-3/4 mx-auto p-7 bg-white backdrop-blur-md rounded-md gap-2 text-[#2f353b] shadow-xl my-10">
+        <div className="w-4/5 xl:w-4/5 2xl:w-3/4 mx-auto p-7 bg-white backdrop-blur-md rounded-md gap-2 text-[#2f353b] shadow-xl my-10 overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>Plant</TableHead>
                 <TableHead>Requestor</TableHead>
                 <TableHead>material</TableHead>
                 <TableHead>reason</TableHead>
-                <TableHead>status</TableHead>
-                <TableHead>approver</TableHead>
                 <TableHead>created_at</TableHead>
                 <TableHead>Operation</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {whitelist_data.map(
-                ({
-                  id,
-                  plant,
-                  requestor,
-                  material,
-                  reason,
-                  status,
-                  approver,
-                  created_at,
-                }) => (
+                ({ id, requestor, material, reason, created_at }) => (
                   <TableRow key={id}>
                     <TableCell>{id}</TableCell>
-                    <TableCell>{plant}</TableCell>
                     <TableCell>{requestor}</TableCell>
-                    <TableCell>{material}</TableCell>
-                    <TableCell>{reason}</TableCell>
-                    <TableCell>{status}</TableCell>
-                    <TableCell>{approver}</TableCell>
+                    <TableCell className="max-w-[200px] text-wrap">{material}</TableCell>
+                    <TableCell>
+                      {reason}
+                    </TableCell>
                     <TableCell>
                       {moment(created_at).format("YYYY-MM-DD HH:mm:ss")}
                     </TableCell>

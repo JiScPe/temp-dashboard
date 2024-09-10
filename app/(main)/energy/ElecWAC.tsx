@@ -1,13 +1,13 @@
 "use client";
 import { RenderDateToString } from "@/app/lib/date-to-str";
-import { iPEA } from "@/app/types/energy-type";
+import { iElecWAC } from "@/app/types/energy-type";
 import {
   Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -15,17 +15,18 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Switch } from "@/components/ui/switch";
+import moment from "moment";
+import React, { Dispatch, SetStateAction } from "react";
 import {
-  Bar,
-  BarChart,
+  Line,
+  LineChart,
   CartesianGrid,
   LabelList,
   XAxis,
   YAxis,
+  Legend,
 } from "recharts";
-import moment from "moment";
-import React, { Dispatch, SetStateAction } from "react";
-import { Switch } from "@/components/ui/switch";
 
 const chartConfig = {
   rate_b: {
@@ -35,13 +36,14 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 type Props = {
-  pea_data: iPEA[];
+  elec_data: iElecWAC[];
   toggle: string;
   settoggle: Dispatch<SetStateAction<string>>;
 };
 
-const PEA = ({ pea_data, toggle, settoggle }: Props) => {
-  const maxUsage = Math.max(...pea_data.map((item) => item.usage));
+const ElecWAC = ({ elec_data, toggle, settoggle }: Props) => {
+  console.log("elec: ", elec_data);
+  const maxUsage = Math.max(...elec_data.map((item) => item.f_consumption));
 
   function handleSwitchChange() {
     if (toggle === "factory") {
@@ -56,7 +58,7 @@ const PEA = ({ pea_data, toggle, settoggle }: Props) => {
       <CardHeader>
         <div className="flex justify-between">
           <CardTitle className="text-blue-600">Electric Consumption</CardTitle>
-          <div className="flex text-haier-text-gray gap-2 text-md uppercase">
+          <div className="flex text-haier-text-gray gap-2 text-sm uppercase">
             <p>factory</p>
             <Switch
               onClick={handleSwitchChange}
@@ -70,16 +72,16 @@ const PEA = ({ pea_data, toggle, settoggle }: Props) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {pea_data.length < 1 ? (
+        {elec_data.length < 1 ? (
           <div>No data.</div>
         ) : (
           <ChartContainer
             config={chartConfig}
             className="h-[300px] 2xl:h-[650px] w-full"
           >
-            <BarChart
+            <LineChart
               accessibilityLayer
-              data={pea_data}
+              data={elec_data}
               margin={{
                 left: 10,
                 right: 5,
@@ -88,12 +90,13 @@ const PEA = ({ pea_data, toggle, settoggle }: Props) => {
               }}
             >
               <CartesianGrid vertical={false} />
+              <Legend verticalAlign="top" height={20} />
               <XAxis
-                dataKey="date"
+                dataKey="f_date"
                 tickLine={false}
                 axisLine={false}
                 tickMargin={20}
-                tickFormatter={(value) => moment(value).format("DD/MM/YYYY")}
+                tickFormatter={(value) => moment(value).format("DD-MM-YYYY")}
                 angle={315}
               />
               <YAxis domain={[0, Math.ceil(maxUsage + 100)]} unit={"kWh"} />
@@ -106,23 +109,21 @@ const PEA = ({ pea_data, toggle, settoggle }: Props) => {
                   />
                 }
               />
-              <Bar
-                dataKey="usage"
+              <Line
+                dataKey={"wac_line1"}
                 type="natural"
-                fill="hsl(var(--color-pea))"
-                fillOpacity={0.9}
-                radius={4}
-                stroke="hsl(var(--color-pea))"
-              >
-                <LabelList
-                  dataKey={"usage"}
-                  position={"insideTop"}
-                  offset={8}
-                  className="fill-secondary"
-                  fontSize={12}
-                />
-              </Bar>
-            </BarChart>
+                strokeWidth={2}
+                stroke="hsl(var(--color-wacline1))"
+                dot={false}
+              />
+              <Line
+                dataKey={"wac_line2"}
+                type="natural"
+                strokeWidth={2}
+                stroke="hsl(var(--color-wacline2))"
+                dot={false}
+              />
+            </LineChart>
           </ChartContainer>
         )}
       </CardContent>
@@ -130,10 +131,13 @@ const PEA = ({ pea_data, toggle, settoggle }: Props) => {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              {RenderDateToString(new Date(pea_data[0]?.date), "DD/MMM/YYYY")}
+              {RenderDateToString(
+                new Date(elec_data[0]?.f_date),
+                "DD/MMM/YYYY"
+              )}
               {" - "}
               {RenderDateToString(
-                new Date(pea_data[pea_data.length - 1]?.date),
+                new Date(elec_data[elec_data.length - 1]?.f_date),
                 "DD/MMM/YYYY"
               )}
             </div>
@@ -144,4 +148,4 @@ const PEA = ({ pea_data, toggle, settoggle }: Props) => {
   );
 };
 
-export default PEA;
+export default ElecWAC;

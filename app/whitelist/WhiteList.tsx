@@ -36,7 +36,7 @@ const WhiteList = () => {
 
     const reqBody = {
       requestor: data.requestor,
-      material: data.material,
+      material: data.material.replace(/[\r\n]+/g, "").trim(),
       reason: data.reason,
     };
     const createRes = await fetch("/api/create-whitelist", {

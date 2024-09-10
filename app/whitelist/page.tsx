@@ -1,6 +1,11 @@
 import React from "react";
 import WhiteList from "./WhiteList";
 
+export const metadata = {
+  title: "Whitelist Request",
+  description: "GMDC Material Whitelist Request",
+};
+
 const MaterialWhitelistPage = async () => {
   return (
     <main className="bg-[#065aa8] text-black h-screen w-full pt-10 lg:pt-0 flex items-start lg:items-center 2xl:items-center">

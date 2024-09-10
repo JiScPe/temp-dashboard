@@ -4,6 +4,12 @@ export interface iPEA {
   err?: any;
 }
 
+export interface iElecWAC {
+  f_date: string;
+  f_prodline: string;
+  f_consumption: number;
+}
+
 export interface iGas {
   assetDescription: string;
   assetTitle: string;
