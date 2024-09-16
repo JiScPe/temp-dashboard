@@ -48,7 +48,7 @@ const NumberCard = () => {
     const data = await res.json();
     setinventoryData(data);
     setisLoading(false);
-  }, [searchParams]);
+  }, [searchParams, curr_date, plant]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,7 +63,7 @@ const NumberCard = () => {
   useEffect(() => {
     setisLoading(true);
     fetchData();
-  }, [plant]);
+  }, [plant, fetchData]);
 
   if ((inventoryData as ErrorRes).error) {
     const errData = inventoryData as ErrorRes;
