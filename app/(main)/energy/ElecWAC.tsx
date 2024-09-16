@@ -95,9 +95,8 @@ const ElecWAC = ({ elec_data, toggle, settoggle }: Props) => {
                 dataKey="f_date"
                 tickLine={false}
                 axisLine={false}
-                tickMargin={20}
+                tickMargin={10}
                 tickFormatter={(value) => moment(value).format("DD-MM-YYYY")}
-                angle={315}
               />
               <YAxis domain={[0, Math.ceil(maxUsage + 100)]} unit={"kWh"} />
               <ChartTooltip

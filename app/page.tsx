@@ -24,6 +24,13 @@ export default function Home() {
       )}&enddate=${RenderDateToString(new Date(), "YYYY-MM-DD")}`,
       name: "Energy",
     },
+    {
+      url: `/inventory-inout?plant=9771&startdate=${RenderDateToString(
+        defaultStartDate,
+        "YYYY-MM-DD"
+      )}&enddate=${RenderDateToString(new Date(), "YYYY-MM-DD")}`,
+      name: "Inventory In/Out",
+    },
     // { url: "/dashboard", name: "Dashboard" },
   ];
   return (
