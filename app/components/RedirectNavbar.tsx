@@ -1,6 +1,6 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
-import React, { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useState } from "react";
 import CurrentTime from "./CurrentTime";
 import UpdateBtn from "./UpdateBtn";
 import { DateRangePicker, Range, RangeKeyDict } from "react-date-range";
@@ -48,8 +48,8 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
   function handleSearchBtnClick() {
     let paramsList: { name: string; value: string | Date | undefined }[] = [];
     let fullUrl = url;
-    if (plant) {
-      paramsList.push({ name: "plant", value: plant });
+    if (plantName) {
+      paramsList.push({ name: "plant", value: plantName });
     }
     if (dateRange) {
       paramsList.push({
@@ -68,7 +68,7 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
         fullUrl += `&${name}=${value}`;
       }
     });
-
+    console.log(fullUrl);
     router.push(fullUrl);
   }
 
@@ -91,7 +91,7 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
                 name="plant"
                 id="plant"
                 className="text-[#445e81] shadow-none bg-opacity-0 bg-inherit border-2 rounded-sm border-[#193b69] focus:outline-none w-14"
-                value={plant}
+                value={plantName}
                 onChange={handlePlantSelectChange}
               >
                 <option value="">Select Plant</option>
