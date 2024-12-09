@@ -48,7 +48,7 @@ const NumberCard = () => {
     const data = await res.json();
     setinventoryData(data);
     setisLoading(false);
-  }, [searchParams, curr_date, plant]);
+  }, [curr_date, plant]);
 
   useEffect(() => {
     const interval = setInterval(() => {

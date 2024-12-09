@@ -1,6 +1,6 @@
 "use client";
 import { iGas } from "@/app/types/energy-type";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -28,7 +28,7 @@ type Props = {
 Chart.register(ArcElement, Tooltip, Legend);
 
 const Gas = ({ gas_data, gas_data_err, getGas_data }: Props) => {
-console.log("gas_data: ", gas_data);
+  console.log("gas_data: ", gas_data);
   const { toast } = useToast();
   const [newdata, setnewdata] = useState(gas_data || []);
   const { error, message, errResponse } = gas_data_err;
@@ -129,9 +129,9 @@ console.log("gas_data: ", gas_data);
     circumference: 180,
   };
 
-  function handleToastActionClick() {
+  const handleToastActionClick = useCallback(() => {
     navigator.clipboard.writeText(JSON.stringify(errResponse));
-  }
+  }, [newdata, error, message, toast]);
 
   useEffect(() => {
     if (error) {
@@ -146,7 +146,7 @@ console.log("gas_data: ", gas_data);
         ),
       });
     }
-  }, [newdata, error, handleToastActionClick, message, toast]);
+  }, [handleToastActionClick]);
 
   if (error) {
     return (

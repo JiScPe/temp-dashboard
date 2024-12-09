@@ -11,14 +11,22 @@ import moment from "moment";
 
 type Props = {
   plant?: string;
+  linecode?: string;
   url: string;
   startdate?: Date;
   enddate?: Date;
   //   fetchRepairData: (plant: string | null) => Promise<any>;
 };
 
-const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
+const RedirectNavbar = ({
+  plant,
+  linecode,
+  url,
+  startdate,
+  enddate,
+}: Props) => {
   const [plantName, setplantName] = useState(plant || "");
+  const [lineCode, setlineCode] = useState(linecode || "RA");
   const [isFirstParam, setisFirstParam] = useState<boolean>(false);
   const [isShowing, setisShowing] = useState<boolean>(false);
   const router = useRouter();
@@ -38,7 +46,25 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
 
   function handlePlantSelectChange(event: ChangeEvent<HTMLSelectElement>) {
     setplantName(event.target.value);
+    switch (event.target.value) {
+      case "9771":
+        setlineCode("RA");
+        break;
+      case "9773":
+        setlineCode("W1");
+        break;
+      case "9774":
+        setlineCode("IN");
+        break;
+      default:
+        setlineCode("");
+        break;
+    }
     // router.push(`/repair?plant=${event.target.value}`);
+  }
+
+  function handleLineCodeSelectChange(event: ChangeEvent<HTMLSelectElement>) {
+    setlineCode(event.target.value);
   }
 
   function handleDateChange(ranges: RangeKeyDict) {
@@ -50,6 +76,9 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
     let fullUrl = url;
     if (plantName) {
       paramsList.push({ name: "plant", value: plantName });
+    }
+    if (lineCode) {
+      paramsList.push({ name: "linecode", value: lineCode });
     }
     if (dateRange) {
       paramsList.push({
@@ -70,6 +99,50 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
     });
     console.log(fullUrl);
     router.push(fullUrl);
+  }
+
+  function renderLineOption() {
+    switch (plantName) {
+      case "9771":
+        const linelist = [
+          { value: "RA", linename: "RA" },
+          { value: "RB", linename: "RB" },
+        ];
+        return linelist.map(({ value, linename }) => (
+          <option key={value} value={value}>
+            {linename}
+          </option>
+        ));
+      case "9773":
+        const linelistWAC = [
+          { value: "W1", linename: "W1" },
+          { value: "W2", linename: "W2" },
+          { value: "WC", linename: "AIO" },
+        ];
+        return linelistWAC.map(({ value, linename }) => (
+          <option key={value} value={value}>
+            {linename}
+          </option>
+        ));
+      case "9774":
+        const linelistSAC = [
+          { value: "W1", linename: "W1" },
+          { value: "W2", linename: "W2" },
+          { value: "IN", linename: "Indoor1" },
+          { value: "N2", linename: "Indoor2" },
+          { value: "N3", linename: "Indoor3" },
+          { value: "OU", linename: "Outdoor1" },
+          { value: "U2", linename: "Outdoor2" },
+          { value: "U3", linename: "Outdoor3" },
+        ];
+        return linelistSAC.map(({ value, linename }) => (
+          <option key={value} value={value}>
+            {linename}
+          </option>
+        ));
+      default:
+        break;
+    }
   }
 
   return (
@@ -101,8 +174,23 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
               </select>
             </div>
           )}
+          {/* line code selection */}
+          {linecode && (
+            <div>
+              <label htmlFor="lineCode">Line:</label>
+              <select
+                name="lineCode"
+                id="lineCode"
+                className="text-[#445e81] shadow-none bg-opacity-0 bg-inherit border-2 rounded-sm border-[#193b69] focus:outline-none w-28"
+                value={lineCode}
+                onChange={handleLineCodeSelectChange}
+              >
+                {renderLineOption()}
+              </select>
+            </div>
+          )}
           {/* date selection */}
-          {startdate && enddate && (
+          {
             <div>
               <input
                 type="text"
@@ -110,7 +198,7 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
                   startDate,
                   "YYYY-MM-DD"
                 )} - ${RenderDateToString(endDate, "YYYY-MM-DD")}`}
-                className="text-sm w-60 text-center py-1 rounded-sm bg-transparent border-2 border-[#193b69] focus:outline-none"
+                className="text-sm w-48 lg:w-48 2xl:w-60 text-center py-1 rounded-sm bg-transparent border-2 border-[#193b69] focus:outline-none"
                 onFocus={() => setisShowing(!isShowing)}
                 readOnly
               />
@@ -132,7 +220,7 @@ const RedirectNavbar = ({ plant, url, startdate, enddate }: Props) => {
                 </div>
               )}
             </div>
-          )}
+          }
           {/* search button */}
           <UpdateBtn onbtnclick={handleSearchBtnClick} text="Search" />
         </div>
