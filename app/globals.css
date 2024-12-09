@@ -32,7 +32,9 @@
       --color-pea: 220 70% 50%;
       --color-wacline1: 221 84% 55%;
       --color-wacline2: 35 85% 55%;
-      --color-label: 0 0% 100%
+      --color-label: 0 0% 100%;
+      --color-plan: 221, 83%, 53%;
+      --color-act: 213, 82%, 65%;
     }
 
     .dark {
@@ -63,7 +65,9 @@
       --color-pea: 220 70% 50%;
       --color-wacline1: 221 84% 55%;
       --color-wacline2: 35 85% 55%;
-      --color-label: 0 0% 100%
+      --color-label: 0 0% 100%;
+      --color-plan: 221, 83%, 53%;
+      --color-act: 213, 82%, 65%;
     }
   }
 

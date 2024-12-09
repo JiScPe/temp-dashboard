@@ -31,7 +31,13 @@ export default function Home() {
       )}&enddate=${RenderDateToString(new Date(), "YYYY-MM-DD")}`,
       name: "Inventory In/Out",
     },
-    // { url: "/dashboard", name: "Dashboard" },
+    {
+      url: `/complete-pending?plant=9771&linecode=RA&startdate=${RenderDateToString(
+        defaultStartDate,
+        "YYYY-MM-DD"
+      )}&enddate=${RenderDateToString(new Date(), "YYYY-MM-DD")}`,
+      name: "CompleteRate & PendingJob",
+    },
   ];
   return (
     <main className="bg-[url('/assets/images/mainbg.png')] bg-cover aspect-auto w-full h-screen text-white">
