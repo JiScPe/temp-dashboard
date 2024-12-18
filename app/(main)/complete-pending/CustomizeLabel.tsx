@@ -5,7 +5,7 @@ class CustomizeLabel extends PureComponent {
     const { x, y, value }: any = this.props;
     return (
       <text x={x} y={y} dy={-10} fill={"#cbd5e1"} fontSize={12} textAnchor="middle">
-        {value}%
+        {value.toFixed(2)}%
       </text>
     );
   }

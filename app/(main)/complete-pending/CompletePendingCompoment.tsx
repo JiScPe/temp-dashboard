@@ -1,59 +1,42 @@
 "use client";
 import RedirectNavbar from "@/app/components/RedirectNavbar";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import moment from "moment";
+  GroupedDataType,
+  getPendingJobRate,
+} from "@/app/lib/utility/getPendingJobRate";
 import { useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Bar,
-  CartesianGrid,
-  ComposedChart,
-  Legend,
-  Line,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import CustomizeLabel from "./CustomizeLabel";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { useCallback, useEffect, useState } from "react";
+import Accum from "./Accum";
+import CompPendChart from "./CompPendChart";
 import { PendingJobType } from "./page";
-import { BsInfoCircle } from "react-icons/bs";
-import {
-  Tooltip as Tooltips,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import PendingjobLoading from "./PendingjobLoading";
 
-interface CompleteRateI {
+export interface CompleteRateI {
   date: string;
   act_qty: number;
   plan_qty: number;
 }
 
+export type AccumCompRateType = {
+  plan_qty: number;
+  act_qty: number;
+  rate: number;
+  date?: string;
+};
+
 type Props = {
   plan_qty: number;
   actual_qty: number;
   comp_rate: CompleteRateI[];
+  accum?: AccumCompRateType;
+  pending_job_rate?: GroupedDataType | undefined;
 };
 
 const CompletePendingCompoment = ({
   plan_qty,
   actual_qty,
   comp_rate,
+  accum,
+  pending_job_rate,
 }: Props) => {
   const searchParams = useSearchParams();
   const plant = searchParams.get("plant");
@@ -66,18 +49,14 @@ const CompletePendingCompoment = ({
     actual_qty: actual_qty,
     comp_rate: comp_rate,
   });
+  const [accum_comp_rate, setaccum_comp_rate] = useState<AccumCompRateType>({
+    plan_qty: accum?.plan_qty || 0,
+    act_qty: accum?.act_qty || 0,
+    rate: accum?.rate || 0,
+    date: "",
+  });
+  const [pendingJobRate, setpendingJobRate] = useState(pending_job_rate);
   const [isLoading, setisLoading] = useState(false);
-
-  const chartConfig = {
-    plan_qty: {
-      label: "Plan",
-      color: "hsl(val(--chart-1))",
-    },
-    act_qty: {
-      label: "Offline",
-      color: "hsl(val(--chart-2))",
-    },
-  };
 
   const chartData = comp_rate;
 
@@ -86,9 +65,19 @@ const CompletePendingCompoment = ({
     setisRelateSelectDate(!isRelateSelectDate);
   }
 
+  async function fetchPendinJobRate() {
+    const res = await fetch(
+      `/api/pendingjob?plant=${plant}&linecode=${prod_line}&related=true&startdate=${startdate}&enddate=${enddate}`
+    );
+    const data: PendingJobType[] = await res.json();
+
+    return data;
+  }
+
   const fetchPendingJob = useCallback(async () => {
     setisLoading(true);
     try {
+      // Get Total Pending Job
       const res = await fetch(
         `/api/pendingjob?plant=${plant}&linecode=${prod_line}&related=${isRelateSelectDate.toString()}&startdate=${startdate}&enddate=${enddate}`
       );
@@ -106,6 +95,53 @@ const CompletePendingCompoment = ({
         actual_qty: act_qty,
         comp_rate: [...pendingJob.comp_rate],
       });
+
+      // Get Pending job Rate
+      const pendingRateData = await fetchPendinJobRate();
+      const result = await getPendingJobRate(pendingRateData, plant, prod_line);
+      console.log(result);
+      setpendingJobRate(result);
+      let plan_qty_related =
+        result?.reduce((acc, cur) => {
+          return cur.plan_qty + acc;
+        }, 0) || 0;
+      let act_qty_related =
+        result?.reduce((acc, cur) => {
+          return cur.act_qty + acc;
+        }, 0) || 0;
+      setpendingJob({
+        plan_qty: isRelateSelectDate ? plan_qty_related : plan_qty,
+        actual_qty: isRelateSelectDate ? act_qty_related : act_qty,
+        comp_rate: [...pendingJob.comp_rate],
+      });
+      // End Get Pending job Rate
+
+      // Get Complete Rate
+      const acc_comp_res = await fetch(
+        `api/job-completerate?plant=${plant}&linecode=${prod_line}&startdate=${startdate}&enddate=${enddate}&related=${isRelateSelectDate}`
+      );
+      const acc_comp_data: AccumCompRateType[] = await acc_comp_res.json();
+      if (isRelateSelectDate === true) {
+        // Calculate accum complete rate
+        const accum_comp_rate = acc_comp_data.reduce(
+          (acc: any, item: any) => {
+            acc.act_qty += item.act_qty;
+            acc.plan_qty += item.plan_qty;
+            return acc;
+          },
+          { act_qty: 0, plan_qty: 0 }
+        );
+        // Calculate accumulated rate
+        accum_comp_rate.rate = (
+          (accum_comp_rate.act_qty / accum_comp_rate.plan_qty) *
+          100
+        ).toFixed(2);
+        // Convert rate back to number
+        accum_comp_rate.rate = parseFloat(accum_comp_rate.rate);
+        setaccum_comp_rate(accum_comp_rate);
+      } else {
+        setaccum_comp_rate(acc_comp_data[0]);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -122,7 +158,7 @@ const CompletePendingCompoment = ({
   }, [fetchPendingJob]);
 
   return (
-    <main className="h-[calc(100vh-80px)] text-haier-text-gray">
+    <main className="h-[calc(100vh)] text-haier-text-gray overflow-y-hidden">
       <RedirectNavbar
         url="/complete-pending"
         plant={plant || undefined}
@@ -130,165 +166,64 @@ const CompletePendingCompoment = ({
         startdate={new Date(startdate || "")}
         enddate={new Date(enddate || "")}
       />
-      <div className="grid grid-cols-4 m-5 gap-5">
-        {/* Pending Job Component */}
-        <div className="col-1 flex flex-col min-h-full">
-          <Card className="bg-background text-haier-text-gray">
-            <CardHeader className="flex justify-between">
-              <div>
-                <CardTitle className="flex justify-between w-full">
-                  <p>Pending Job</p>
-                  <TooltipProvider>
-                    <Tooltips>
-                      <TooltipTrigger>
-                        <BsInfoCircle size={18} />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          {isRelateSelectDate
-                            ? "Offline quantity of Plan date"
-                            : "Offline quantity of Yesterday"}
-                        </p>
-                      </TooltipContent>
-                    </Tooltips>
-                  </TooltipProvider>
-                </CardTitle>
-                <CardDescription>
-                  Of{" "}
-                  {isRelateSelectDate
-                    ? `${startdate} - ${enddate}`
-                    : `Yesterday`}
-                </CardDescription>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="relate-date"
-                  style={{ padding: 0 }}
-                  checked={isRelateSelectDate}
-                  onClick={handleSwitchChange}
-                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
-                />
-                <Label htmlFor="relate-date">Relate selected date</Label>
-              </div>
-            </CardHeader>
-            {isLoading ? (
-              <PendingjobLoading />
-            ) : (
-              <CardContent className="flex flex-col 2xl:h-[700px] h-[390px] font-semibold text-xl 2xl:text-4xl gap-3">
-                <div className="w-full text-center h-1/3 flex flex-col justify-center items-center bg-blue-600 bg-opacity-10 rounded-md">
-                  <h2>{pendingJob.plan_qty}</h2>
-                  <p className="text-sm 2xl:text-lg">Plan</p>
-                </div>
-                <div className="w-full text-center h-1/3 flex flex-col justify-center items-center bg-blue-600 bg-opacity-10 rounded-md">
-                  <h2>{pendingJob.actual_qty}</h2>
-                  <p className="text-sm 2xl:text-lg">Offline</p>
-                </div>
-                <div className="w-full text-center h-1/3 flex justify-center items-center bg-blue-600 bg-opacity-10 rounded-md">
-                  <h2>
-                    {pendingJob.plan_qty === 0
-                      ? 0
-                      : (
-                          (pendingJob.actual_qty / pendingJob.plan_qty) *
-                          100
-                        ).toFixed(2)}
-                    %
-                  </h2>
-                </div>
-              </CardContent>
-            )}
-          </Card>
+      <div className="grid grid-cols-1 p-3 2xl:p-5 gap-2">
+        {/* First Row: Pending Job and Completion Rate */}
+        <div className="grid grid-cols-4 gap-3">
+          {/* Pending Job Component */}
+          <Accum
+            title="Pending Job"
+            description="Offline qty of job"
+            isRelateSelectDate={isRelateSelectDate}
+            startdate={startdate}
+            enddate={enddate}
+            handleSwitchChange={handleSwitchChange}
+            isLoading={isLoading}
+            pendingJobData={pendingJob}
+          />
+
+          {/* Completion Rate Chart */}
+          <CompPendChart
+            startdate={startdate}
+            enddate={enddate}
+            chartData={pendingJobRate}
+            title="Job Pending Rate"
+            dataKey={{
+              x_axis: "date",
+              y_axis: "rate",
+              bar1: "plan_qty",
+              bar2: "act_qty",
+              line: "rate",
+            }}
+          />
         </div>
-        {/* Completerate Chart */}
-        <div className="col-span-3">
-          <div className="w-full min-h-1/2">
-            <Card className="bg-background text-haier-text-gray">
-              <CardHeader>
-                <CardTitle className="flex justify-between">
-                  <p>Job Complete Rate</p>
-                  <TooltipProvider>
-                    <Tooltips>
-                      <TooltipTrigger>
-                        <BsInfoCircle size={18} />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          Total Offline qty / Plan qty{" "}
-                          <small>for each day</small>
-                        </p>
-                      </TooltipContent>
-                    </Tooltips>
-                  </TooltipProvider>
-                </CardTitle>
-                <CardDescription>{`${moment(startdate).format(
-                  "DD MMM"
-                )} - ${moment(enddate).format("DD MMM")}`}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={chartConfig}
-                  className="h-[390px] 2xl:h-[700px] text-white w-full"
-                >
-                  <ComposedChart accessibilityLayer data={chartData}>
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickSize={10}
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={false}
-                      tickFormatter={(value) => moment(value).format("DD-MMM")}
-                    />
-                    <YAxis
-                      label={{
-                        value: "Quantity",
-                        position: "insideTop",
-                        offset: -25,
-                        textAnchor: "middle",
-                      }}
-                    />
-                    <YAxis
-                      yAxisId={1}
-                      dataKey={"rate"}
-                      orientation="right"
-                      tickFormatter={(value) => value + "%"}
-                      label={{
-                        value: "rate",
-                        position: "insideTop",
-                        offset: -25,
-                        textAnchor: "middle",
-                      }}
-                    />
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent indicator="dashed" />}
-                    />
-                    <Tooltip cursorStyle={{ backgroundColor: "red" }} />
-                    <Legend verticalAlign="top" height={36} />
-                    <Bar
-                      dataKey="plan_qty"
-                      fill="hsl(var(--color-plan))"
-                      radius={4}
-                      label
-                    />
-                    <Bar
-                      dataKey="act_qty"
-                      fill="hsl(var(--color-act))"
-                      radius={4}
-                      label
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="rate"
-                      stroke="#ff7300"
-                      yAxisId={1}
-                      strokeWidth={2}
-                      label={<CustomizeLabel />}
-                    />
-                  </ComposedChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Add new rows */}
+        {/* Second Row: Additional Components */}
+        <div className="grid grid-cols-4 gap-3">
+          {/* Another Pending Job Component */}
+          <Accum
+            title="Efficiency"
+            description="Plan qty compare with Offline qty"
+            isRelateSelectDate={isRelateSelectDate}
+            startdate={startdate}
+            enddate={enddate}
+            handleSwitchChange={handleSwitchChange}
+            isLoading={isLoading}
+            accum_comp_rate={accum_comp_rate}
+          />
+          {/* Another Completion Rate Chart */}
+          <CompPendChart
+            startdate={startdate}
+            enddate={enddate}
+            chartData={chartData}
+            title="Job Complete Rate"
+            dataKey={{
+              x_axis: "date",
+              y_axis: "rate",
+              bar1: "plan_qty",
+              bar2: "act_qty",
+              line: "rate",
+            }}
+          />
         </div>
       </div>
     </main>

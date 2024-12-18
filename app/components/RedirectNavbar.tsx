@@ -225,10 +225,10 @@ const RedirectNavbar = ({
           <UpdateBtn onbtnclick={handleSearchBtnClick} text="Search" />
         </div>
         {/* Current Time */}
-        <div className="font-semibold text-[16px] pr-7">
+        <div className="font-semibold text-sm 2xl:text-[16px] pr-7">
           <CurrentTime />
         </div>
-      </div>
+      </div>  
     </nav>
   );
 };

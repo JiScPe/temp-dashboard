@@ -44,19 +44,18 @@ const mergeData = (offline: Data[], plan: Data[]): Data[] => {
 };
 
 const calculateRate = (mergedData: Data[]): Data[] => {
-  return mergedData
-    .map((entry) => {
-      const { act_qty = 0, plan_qty = 0 } = entry;
+  return mergedData.map((entry) => {
+    const { act_qty = 0, plan_qty = 0 } = entry;
 
-      // Calculate rate safely to avoid division by 0
-      const rate = plan_qty > 0 ? (act_qty / plan_qty) * 100 : 0;
+    // Calculate rate safely to avoid division by 0
+    const rate = plan_qty > 0 ? (act_qty / plan_qty) * 100 : 0;
 
-      // Return a new object with the rate added
-      return {
-        ...entry,
-        rate: parseFloat(rate.toFixed(2)), // Round to 2 decimal places
-      };
-    });
+    // Return a new object with the rate added
+    return {
+      ...entry,
+      rate: parseFloat(rate.toFixed(2)), // Round to 2 decimal places
+    };
+  });
 };
 
 export async function GET(req: NextRequest) {
@@ -65,11 +64,20 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const plant = url.searchParams.get("plant");
   const linecode = url.searchParams.get("linecode");
-  const startdate =
-    url.searchParams.get("startdate") ||
-    moment().add(-7, "days").format("YYYY-MM-DD");
-  const enddate =
-    url.searchParams.get("enddate") || moment().format("YYYY-MM-DD");
+  const isRelated = url.searchParams.get("related");
+  let startdate, enddate;
+  if (isRelated === "false") {
+    if (moment().add(-1, "day").day() === 0) {
+      startdate = enddate = moment().add(-2, "day").format("YYYY-MM-DD");
+    } else {
+      startdate = enddate = moment().add(-1, "day").format("YYYY-MM-DD");
+    }
+  } else {
+    startdate =
+      url.searchParams.get("startdate") ||
+      moment().add(-7, "days").format("YYYY-MM-DD");
+    enddate = url.searchParams.get("enddate") || moment().format("YYYY-MM-DD");
+  }
 
   if (!plant) {
     return NextResponse.json({ message: "กรุณาใส่ plant!" }, { status: 400 });
