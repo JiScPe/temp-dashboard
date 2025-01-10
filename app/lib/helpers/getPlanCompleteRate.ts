@@ -1,4 +1,3 @@
-import moment from "moment";
 import { Connection, RowDataPacket } from "mysql2";
 
 export async function getPlanCompletRate(
