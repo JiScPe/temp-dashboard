@@ -88,7 +88,10 @@ const CompletePending = async ({ searchParams }: Props) => {
     <CompletePendingCompoment
       plan_qty={plan_qty}
       actual_qty={act_qty}
-      comp_rate={comp_rate_data}
+      comp_rate={comp_rate_data.sort(
+        (a: any, b: any) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+      )}
       accum={accum_comp_rate}
       pending_job_rate={pendingJobRate}
     />
